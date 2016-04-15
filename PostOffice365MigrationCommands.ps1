@@ -1,4 +1,8 @@
-﻿Get-cloudMailbox -ResultSize Unlimited -Filter {RecipientTypeDetails -eq "UserMailbox"} | Set-cloudMailbox -AuditOwner MailboxLogin,HardDelete -AuditDelegate HardDelete,SendAs -AuditEnabled $true
+﻿$cred = Get-Credential
+$session = New-PSSession -ConfigurationName Microsoft.Exchange -Authentication Basic -ConnectionUri https://ps.outlook.com/powershell -AllowRedirection:$true -Credential $cred
+Import-PSSession $Session -Prefix Cloud -DisableNameChecking
+
+Get-cloudMailbox -ResultSize Unlimited -Filter {RecipientTypeDetails -eq "UserMailbox"} | Set-cloudMailbox -AuditOwner MailboxLogin,HardDelete -AuditDelegate HardDelete,SendAs -AuditEnabled $true
 $noArchiveUser = Get-remoteMailbox -ResultSize Unlimited -Filter {RecipientTypeDetails -eq "remoteUserMailbox"} | where {$_.archivestatus -ne "Active"}
 foreach($user in $noArchiveUser){
      [string]$name = $user.name
